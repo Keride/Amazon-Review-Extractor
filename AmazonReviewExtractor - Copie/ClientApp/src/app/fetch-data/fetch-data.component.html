@@ -1,0 +1,49 @@
+<h1 id="tableLabel">Reviews</h1>
+
+<form [formGroup]="asinForm" (ngSubmit)="onSubmit()">
+  <div>
+    <label for="ASIN">
+      Asins to add ("asin1 asin2 ...") : 
+    </label>
+    <input id="ASIN" type="text" formControlName="ASIN">
+  </div>
+
+  <button class="button" type="submit">Add Asin</button>
+</form>
+
+<form>
+  <div class="search form-group form-inline">
+      <i class="fa fa-search" aria-hidden="true"></i>
+      <input class="form-control ml-2" placeholder="Search" type="text" [formControl]="filter"/>
+  </div>
+</form>
+
+<p *ngIf="!reviews"><em>Loading...</em></p>
+
+<mat-list role="list" *ngIf="asins">
+  <mat-list-option *ngFor="let asin of asins | keyvalue" [value]="asin" [ngStyle]="{'color': (asin.value === AsinStatus.INDEX) ? 'green' : (asin.value === AsinStatus.FAIL) ? 'red' : (asin.value === AsinStatus.SEARCH) ? 'yellow' : ''}">
+    {{asin.key}}
+  </mat-list-option>
+</mat-list>
+
+
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="reviews">
+  <thead>
+    <tr>
+      <th scope="col" sortable="asin" (sort)="onSort($event)">Product ASIN</th>
+      <th scope="col" sortable="date" (sort)="onSort($event)">Date</th>
+      <th scope="col" >Title</th>
+      <th scope="col" >Content</th>
+      <th scope="col" sortable="rating" (sort)="onSort($event)">Rating</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let r of reviews$ | async;">
+      <td><ngb-highlight [result]="r.asin" [term]="filter.value"></ngb-highlight></td>
+      <td>{{ r.date }}</td>
+      <td><ngb-highlight [result]="r.title" [term]="filter.value"></ngb-highlight></td>
+      <td><ngb-highlight [result]="r.content" [term]="filter.value"></ngb-highlight></td>
+      <td>{{ r.rating }}/5</td>
+    </tr>
+  </tbody>
+</table>
