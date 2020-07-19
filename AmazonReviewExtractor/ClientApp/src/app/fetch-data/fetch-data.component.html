@@ -1,0 +1,35 @@
+<h1 id="tableLabel">Reviews</h1>
+
+<form [formGroup]="checkoutForm" (ngSubmit)="onSubmit(checkoutForm.value)">
+  <div>
+    <label for="ASIN">
+      Asin to add :
+    </label>
+    <input id="ASIN" type="text" formControlName="ASIN">
+  </div>
+
+  <button class="button" type="submit">Add Asin</button>
+</form>
+
+<p *ngIf="!reviews"><em>Loading...</em></p>
+
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="reviews">
+  <thead>
+    <tr>
+      <th>Product ASIN</th>
+      <th>Date</th>
+      <th>Title</th>
+      <th>Content</th>
+      <th>Rating</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let r of reviews">
+      <td>{{ r.asin }}</td>
+      <td>{{ r.date }}</td>
+      <td>{{ r.title }}</td>
+      <td>{{ r.content }}</td>
+      <td>{{ r.rating }}</td>
+    </tr>
+  </tbody>
+</table>
