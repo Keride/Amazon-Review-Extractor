@@ -19,6 +19,13 @@
 
 <p *ngIf="!reviews"><em>Loading...</em></p>
 
+<mat-list role="list" *ngIf="asins">
+  <mat-list-option *ngFor="let asin of asins | keyvalue" [value]="asin" [ngStyle]="{'color': (asin.value === AsinStatus.INDEX) ? 'green' : (asin.value === AsinStatus.FAIL) ? 'red' : (asin.value === AsinStatus.SEARCH) ? 'yellow' : ''}">
+    {{asin.key}}
+  </mat-list-option>
+</mat-list>
+
+
 <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="reviews">
   <thead>
     <tr>

@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { DecimalPipe } from '@angular/common';
 
 export type SortColumn = keyof Review | '';
 export type SortDirection = 'asc' | 'desc' | '';
@@ -45,10 +44,6 @@ function search(text: string, reviews: Review[]): Review[] {
       || review.asin.toLowerCase().includes(term);
   });
 }
-export class NgbdTableFiltering {
-
-
-}
 
 @Component({
   selector: 'app-fetch-data',
@@ -57,7 +52,7 @@ export class NgbdTableFiltering {
 
 export class FetchDataComponent {
   public reviews: Review[];
-  public asins: string[];
+  public asins: Object;
   public reviews$: Observable<Review[]>;
 
   public asinForm = new FormGroup({
@@ -72,18 +67,27 @@ export class FetchDataComponent {
   constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
     this.baseUrl = baseUrl;
     this.http = http;
+    this.asins = new Object()
+    this.reviews = new Array()
   }
 
+  get AsinStatus() { return AsinStatus; }
+
   getReviewForASIN(asin: string) {
-    this.asins.push(asin);
+    if(asin in this.asins)
+      return;
+
+    this.asins[asin] = AsinStatus.SEARCH;
 
     this.http.get<Review[]>(this.baseUrl + 'review/' + asin).subscribe(result => {
-      this.reviews.push.apply(result);
+      if(result.length == 0 ){
+        this.asins[asin] = AsinStatus.FAIL;
+        return;
+      }
+      this.asins[asin] = AsinStatus.INDEX;
+      this.reviews.push.apply(this.reviews, result);
 
-      this.reviews$ = this.filter.valueChanges.pipe(
-        startWith(''),
-        map(text => search(text, this.reviews))
-      );
+      this.filterF()
 
     }, error => console.error(error));
   }
@@ -92,8 +96,15 @@ export class FetchDataComponent {
     this.getReviewForASIN(this.asinForm.value.ASIN)
   }
 
+  filterF(){
+    this.reviews$ = this.filter.valueChanges.pipe(
+      startWith(''),
+      map(text => search(text, this.reviews))
+    );
+  }
+
   onSort({ column, direction }: SortEvent) {
-    
+
     // resetting other headers
     this.headers.forEach(header => {
       if (header.sortable !== column) {
@@ -106,6 +117,9 @@ export class FetchDataComponent {
       const res = compare(a[column], b[column]);
       return direction === 'asc' ? res : -res;
     });
+
+    this.filterF()
+    
   }
 }
 
@@ -115,4 +129,11 @@ interface Review {
   title: string;
   content: string;
   rating: bigint;
+}
+
+export enum AsinStatus
+{
+  FAIL,
+  INDEX,
+  SEARCH
 }

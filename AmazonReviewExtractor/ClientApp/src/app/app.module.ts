@@ -7,7 +7,6 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { FetchDataComponent, NgbdSortableHeader } from './fetch-data/fetch-data.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { DecimalPipe } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -20,7 +19,7 @@ import { DecimalPipe } from '@angular/common';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    NgbModule, 
+    NgbModule,
     RouterModule.forRoot([
       { path: '', component: FetchDataComponent, pathMatch: 'full'},
     ]), NgbModule
