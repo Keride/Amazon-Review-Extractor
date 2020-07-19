@@ -5,7 +5,7 @@ namespace AmazonReviewExtractor
     public class Review
     {
         public string ASIN { get; set; }
-        public DateTime Date { get; set; }
+        public string Date { get; set; }
 
         public string Title { get; set; }
 

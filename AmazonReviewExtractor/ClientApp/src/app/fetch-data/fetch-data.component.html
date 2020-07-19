@@ -1,6 +1,6 @@
 <h1 id="tableLabel">Reviews</h1>
 
-<form [formGroup]="checkoutForm" (ngSubmit)="onSubmit(checkoutForm.value)">
+<form [formGroup]="asinForm" (ngSubmit)="onSubmit()">
   <div>
     <label for="ASIN">
       Asin to add :
@@ -29,7 +29,7 @@
       <td>{{ r.date }}</td>
       <td>{{ r.title }}</td>
       <td>{{ r.content }}</td>
-      <td>{{ r.rating }}</td>
+      <td>{{ r.rating }}/5</td>
     </tr>
   </tbody>
 </table>

@@ -23,19 +23,12 @@ namespace AmazonReviewExtractor.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        public IEnumerable<Review> Get()
+        [HttpGet("{asin}")]
+        public async Task<IEnumerable<Review>> GetReview(string asin)
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new Review
-            {
-                Date = DateTime.Now.AddDays(index),
-                Title = "Test",
-                Content = Contents[rng.Next(Contents.Length)],
-                ASIN = "RDJDVNSDF",
-                Rating = 5
-            })
-            .ToArray();
+            WebScrapper scrapper = new WebScrapper(_logger);
+            List<Review> reviews = await scrapper.ScrapReview(asin);
+            return reviews.ToArray();
         }
     }
 }
