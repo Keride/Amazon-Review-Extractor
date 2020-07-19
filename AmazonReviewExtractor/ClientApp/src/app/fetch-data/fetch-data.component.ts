@@ -63,6 +63,7 @@ export class FetchDataComponent {
   private http: HttpClient;
   private baseUrl: string;
   @ViewChildren(NgbdSortableHeader) headers: QueryList<NgbdSortableHeader>;
+  private currentSort:SortEvent;
 
   constructor(http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
     this.baseUrl = baseUrl;
@@ -87,23 +88,29 @@ export class FetchDataComponent {
       this.asins[asin] = AsinStatus.INDEX;
       this.reviews.push.apply(this.reviews, result);
 
-      this.filterF()
+      this.reviews$ = this.filter.valueChanges.pipe(
+        startWith(''),
+        map(text => search(text, this.reviews)),
+        map(data => data.sort((a, b) => {
+          if(!this.currentSort)
+            return 0;
+          const res = compare(a[this.currentSort.column], b[this.currentSort.column]);
+          return this.currentSort.direction === 'asc' ? res : -res;
+        }))
+      );
 
     }, error => console.error(error));
   }
 
   onSubmit() {
-    this.getReviewForASIN(this.asinForm.value.ASIN)
-  }
-
-  filterF(){
-    this.reviews$ = this.filter.valueChanges.pipe(
-      startWith(''),
-      map(text => search(text, this.reviews))
-    );
+    var asins = this.asinForm.value.ASIN.split(" ")
+    for(var i in asins){
+      this.getReviewForASIN(asins[i])
+    }
   }
 
   onSort({ column, direction }: SortEvent) {
+    this.currentSort = { column, direction };
 
     // resetting other headers
     this.headers.forEach(header => {
@@ -112,14 +119,17 @@ export class FetchDataComponent {
       }
     });
 
-    // sorting countries
-    this.reviews = this.reviews.sort((a, b) => {
-      const res = compare(a[column], b[column]);
-      return direction === 'asc' ? res : -res;
-    });
+    this.reviews$ = this.reviews$.pipe(
+      startWith(''),
+      map(text => search(this.filter.value, this.reviews)),
+      map(data => data.sort((a, b) => {
+        if(!this.currentSort)
+          return 0;
+        const res = compare(a[this.currentSort.column], b[this.currentSort.column]);
+        return this.currentSort.direction === 'asc' ? res : -res;
+      }))
+    );
 
-    this.filterF()
-    
   }
 }
 

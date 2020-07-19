@@ -23,7 +23,6 @@ namespace AmazonReviewExtractor
             var regex = new Regex(@"\b[a-zA-Z]+\b \d{1,2}, \d{4}\b");
             foreach (Match m in regex.Matches(posAndDate))
             {
-                _logger.LogInformation($"{m}");
                 DateTime dt;
                 if (DateTime.TryParseExact(m.Value, "MMMM d, yyyy", enUS, DateTimeStyles.None, out dt))
                     return dt.ToString("dd/MM/yyyy");
@@ -43,11 +42,14 @@ namespace AmazonReviewExtractor
             return 0;
         }
 
-        public async Task<List<Review>> ScrapReview(string asin)
+        public async Task<List<Review>> ScrapReview(string asin, int pageNumber = 0)
         {
-            string base_url = "https://www.amazon.com/product-reviews/" + asin;
+            string base_url = "https://www.amazon.com/product-reviews/" + asin + "?sortBy=recent/pageNumber=" + pageNumber;
+
+            _logger.LogInformation($"Scrapping {base_url}");
 
             List<Review> reviews = new List<Review>();
+
             var config = Configuration.Default.WithDefaultLoader();
             var context = BrowsingContext.New(config);
             var document = await context.OpenAsync(base_url);
@@ -62,9 +64,11 @@ namespace AmazonReviewExtractor
                 review.Rating = getRating(row.QuerySelector("[data-hook=review-star-rating]").ClassName); //a_star_X class
 
                 reviews.Add(review);
-                _logger.LogInformation($"{review} : {review.Date}");
             }
 
+            if(reviews.Count != 0 && pageNumber < 5) //10 review per page -> we want 50
+                reviews.AddRange(await ScrapReview(asin, pageNumber+1));
+                
             return reviews;
         }
 

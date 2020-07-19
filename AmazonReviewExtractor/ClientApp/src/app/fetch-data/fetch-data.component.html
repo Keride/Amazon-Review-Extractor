@@ -3,7 +3,7 @@
 <form [formGroup]="asinForm" (ngSubmit)="onSubmit()">
   <div>
     <label for="ASIN">
-      Asin to add :
+      Asins to add ("asin1 asin2 ...") : 
     </label>
     <input id="ASIN" type="text" formControlName="ASIN">
   </div>
@@ -12,8 +12,9 @@
 </form>
 
 <form>
-  <div class="form-group form-inline">
-      Full text search: <input class="form-control ml-2" type="text" [formControl]="filter"/>
+  <div class="search form-group form-inline">
+      <i class="fa fa-search" aria-hidden="true"></i>
+      <input class="form-control ml-2" placeholder="Search" type="text" [formControl]="filter"/>
   </div>
 </form>
 
