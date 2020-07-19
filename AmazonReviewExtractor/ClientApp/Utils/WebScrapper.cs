@@ -44,7 +44,7 @@ namespace AmazonReviewExtractor
 
         public async Task<List<Review>> ScrapReview(string asin, int pageNumber = 0)
         {
-            string base_url = "https://www.amazon.com/product-reviews/" + asin + "?sortBy=recent/pageNumber=" + pageNumber;
+            string base_url = "https://www.amazon.com/product-reviews/" + asin + "?sortBy=recent&pageNumber=" + pageNumber;
 
             _logger.LogInformation($"Scrapping {base_url}");
 
@@ -68,7 +68,7 @@ namespace AmazonReviewExtractor
 
             if(reviews.Count != 0 && pageNumber < 5) //10 review per page -> we want 50
                 reviews.AddRange(await ScrapReview(asin, pageNumber+1));
-                
+
             return reviews;
         }
 

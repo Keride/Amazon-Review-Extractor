@@ -11,11 +11,6 @@ namespace AmazonReviewExtractor.Controllers
     [Route("[controller]")]
     public class ReviewController : ControllerBase
     {
-        private static readonly string[] Contents = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
         private readonly ILogger<ReviewController> _logger;
 
         public ReviewController(ILogger<ReviewController> logger)
